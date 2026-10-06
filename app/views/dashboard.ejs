@@ -1,0 +1,184 @@
+<%- include('partials/header') %>
+
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.55rem;margin-bottom:0.85rem">
+  <div>
+    <h1 style="margin:0;font-size:1.2rem">سلام<%= user && user.name ? '، ' + user.name : '' %></h1>
+    <p class="muted" style="margin:0.2rem 0 0;font-size:0.78rem"><%= dash.iran.display %></p>
+  </div>
+  <div style="display:flex;gap:0.35rem;flex-wrap:wrap">
+    <a href="/focus" class="btn btn-primary btn-sm">⏱️ تایمر</a>
+    <a href="/habits/new" class="btn btn-sm">+ عادت</a>
+  </div>
+</div>
+
+<div class="grid-3" style="margin-bottom:0.75rem">
+  <div class="card stat">
+    <div class="num" style="color:var(--ok)" id="rtPercent" data-percent><%= dash.percent %>%</div>
+    <div class="lbl">پیشرفت امروز</div>
+  </div>
+  <div class="card stat">
+    <div class="num" id="rtDone"><%= dash.doneCount %> / <%= dash.total %></div>
+    <div class="lbl">عادت‌ها</div>
+  </div>
+  <div class="card stat">
+    <div class="num" style="color:var(--warn)" id="rtStreak">🔥 <%= dash.bestStreak %></div>
+    <div class="lbl">بهترین زنجیره</div>
+  </div>
+</div>
+
+<div class="grid-3" style="margin-bottom:0.75rem">
+  <div class="card stat">
+    <div class="num" style="font-size:1.2rem" id="rtTaskW"><%= dash.taskStats.week %></div>
+    <div class="lbl">تسک هفتگی</div>
+  </div>
+  <div class="card stat">
+    <div class="num" style="font-size:1.2rem" id="rtTaskM"><%= dash.taskStats.month %></div>
+    <div class="lbl">تسک ماهانه</div>
+  </div>
+  <div class="card stat">
+    <div class="num" style="font-size:1.2rem" id="rtTaskY"><%= dash.taskStats.year %></div>
+    <div class="lbl">تسک سالانه</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div>
+    <div class="card" style="margin-bottom:0.75rem">
+      <h2 style="margin:0 0 0.65rem;font-size:0.95rem">✅ چک‌لیست عادت‌ها</h2>
+      <% if (!dash.items.length) { %>
+        <p class="muted">عادتی نیست. <a href="/habits/new" style="color:var(--accent)">بساز</a></p>
+      <% } %>
+      <% dash.items.forEach(h => { %>
+        <div class="habit-row <%= h.done_today ? 'done' : '' %>" data-id="<%= h.id %>">
+          <button type="button" class="check" onclick="toggleHabit(<%= h.id %>, this)"><%= h.done_today ? '✓' : '' %></button>
+          <div class="habit-meta">
+            <div class="habit-title"><%= h.title %></div>
+            <div class="habit-sub"><%= h.two_minute || h.cue || h.category %></div>
+          </div>
+          <span class="streak-pill" data-streak>🔥 <%= h.streak %></span>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="card" style="margin-bottom:0.75rem">
+      <h2 style="margin:0 0 0.65rem;font-size:0.95rem">📋 وظایف امروز</h2>
+      <form method="POST" action="/tasks" style="display:flex;gap:0.35rem;margin-bottom:0.65rem">
+        <input name="title" placeholder="وظیفه..." required style="flex:1;min-width:0">
+        <button class="btn btn-primary btn-sm" type="submit">+</button>
+      </form>
+      <% dash.tasks.forEach(t => { %>
+        <div class="habit-row <%= t.done ? 'done' : '' %>">
+          <form method="POST" action="/tasks/<%= t.id %>/toggle"><button class="check" type="submit"><%= t.done ? '✓' : '' %></button></form>
+          <div class="habit-meta"><div class="habit-title"><%= t.title %></div></div>
+          <form method="POST" action="/tasks/<%= t.id %>/delete"><button class="btn btn-sm btn-danger" type="submit">×</button></form>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 0.45rem;font-size:0.95rem">🪪 هویت</h2>
+      <form method="POST" action="/identity">
+        <textarea name="identity" rows="2"><%= identity %></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:0.4rem">ذخیره</button>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <div class="farm card" style="margin-bottom:0.75rem">
+      <div class="stage" id="rtFarmEmoji"><%= dash.farm.stage.split(' ')[0] %></div>
+      <div style="font-weight:700;margin-top:0.3rem;font-size:0.9rem" id="rtFarmStage"><%= dash.farm.stage %></div>
+      <div class="muted" style="font-size:0.72rem">سطح <span id="rtLevel"><%= dash.farm.level %></span> · XP <span id="rtXp"><%= dash.farm.xp %></span></div>
+      <div class="bar"><span id="rtFarmBar" style="width:<%= dash.farm.pct %>%"></span></div>
+      <div class="muted" style="margin-top:0.5rem;font-size:0.75rem">
+        بج تمرکز: <%= dash.focusBadge.emoji %> <%= dash.focusBadge.name %>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0.75rem">
+      <h2 style="margin:0 0 0.45rem;font-size:0.95rem">⏱️ تمرکز</h2>
+      <p style="margin:0;font-size:1.15rem;font-weight:700"><span id="rtTodayMin"><%= dash.focus.todayMin %></span> <span class="muted" style="font-size:0.75rem">دقیقه امروز</span></p>
+      <a href="/focus" class="btn btn-sm" style="margin-top:0.45rem">شروع تایمر</a>
+    </div>
+
+    <div class="card" style="margin-bottom:0.75rem">
+      <h2 style="margin:0 0 0.65rem;font-size:0.95rem">📈 نمودار ۷ روز</h2>
+      <canvas id="weekChart" height="160"></canvas>
+    </div>
+
+    <div class="card">
+      <h2 style="margin:0 0 0.55rem;font-size:0.95rem">📅 ماه · <%= dash.monthLen %> روز</h2>
+      <div class="heat">
+        <% dash.heat.forEach(d => {
+          const r = d.max ? d.count / d.max : 0;
+          let cls = '';
+          if (r > 0 && r < 0.34) cls = 'l1';
+          else if (r > 0 && r < 0.67) cls = 'l2';
+          else if (r > 0 && r < 1) cls = 'l3';
+          else if (r >= 1) cls = 'l4';
+        %>
+          <i class="<%= cls %>" title="<%= d.date %>"></i>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var chart;
+  var ctx = document.getElementById('weekChart');
+  if (ctx && window.Chart) {
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: <%- JSON.stringify(dash.week.labels) %>,
+        datasets: [{
+          label: 'انجام‌شده',
+          data: <%- JSON.stringify(dash.week.completed) %>,
+          backgroundColor: 'rgba(52,211,153,0.55)',
+          borderRadius: 6,
+          maxBarThickness: 24
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#8b9bb4', font: { size: 10 } }, grid: { display: false } },
+          y: { beginAtZero: true, ticks: { stepSize: 1, color: '#8b9bb4' }, grid: { color: 'rgba(42,53,72,0.45)' } }
+        }
+      }
+    });
+  }
+  function applyDash(d){
+    var p=document.getElementById('rtPercent'); if(p) p.textContent=d.percent+'%';
+    var dn=document.getElementById('rtDone'); if(dn) dn.textContent=d.doneCount+' / '+d.total;
+    var st=document.getElementById('rtStreak'); if(st) st.textContent='🔥 '+d.bestStreak;
+    var tm=document.getElementById('rtTodayMin'); if(tm) tm.textContent=d.todayMin;
+    if(d.taskStats){
+      var w=document.getElementById('rtTaskW'); if(w) w.textContent=d.taskStats.week;
+      var m=document.getElementById('rtTaskM'); if(m) m.textContent=d.taskStats.month;
+      var y=document.getElementById('rtTaskY'); if(y) y.textContent=d.taskStats.year;
+    }
+    if(d.farm){
+      var lv=document.getElementById('rtLevel'); if(lv) lv.textContent=d.farm.level;
+      var xp=document.getElementById('rtXp'); if(xp) xp.textContent=d.farm.xp;
+      var bar=document.getElementById('rtFarmBar'); if(bar) bar.style.width=d.farm.pct+'%';
+      var stg=document.getElementById('rtFarmStage'); if(stg) stg.textContent=d.farm.stage;
+      var em=document.getElementById('rtFarmEmoji'); if(em) em.textContent=(d.farm.stage||'').split(' ')[0];
+    }
+    if(chart && d.week){
+      chart.data.labels=d.week.labels;
+      chart.data.datasets[0].data=d.week.completed;
+      chart.update('none');
+    }
+  }
+  window.__applyDash = applyDash;
+  setInterval(function(){
+    fetch('/api/dashboard',{credentials:'same-origin'})
+      .then(function(r){return r.json()}).then(applyDash).catch(function(){});
+  }, 5000);
+})();
+</script>
+<%- include('partials/footer') %>

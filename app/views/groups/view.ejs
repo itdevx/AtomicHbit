@@ -1,0 +1,25 @@
+<%- include('../partials/header') %>
+<div class="card" style="margin-bottom:0.75rem">
+  <h1 style="margin-top:0;font-size:1.1rem">👥 <%= group.name %></h1>
+  <p class="muted"><%= group.description %></p>
+  <div style="display:flex;flex-wrap:wrap;gap:0.35rem">
+    <% if (!isMember) { %>
+      <form method="POST" action="/groups/<%= group.id %>/join"><button class="btn btn-primary btn-sm">درخواست عضویت</button></form>
+    <% } else { %>
+      <a href="/chat?room=group-<%= group.id %>" class="btn btn-primary btn-sm">💬 چت گروه</a>
+    <% } %>
+    <% if (isLeader) { %><a href="/groups/<%= group.id %>/requests" class="btn btn-sm">درخواست‌ها</a><% } %>
+  </div>
+</div>
+
+<div class="sec-title">اعضای گروه (<%= members.length %>)</div>
+<div class="grid-sq">
+  <% members.forEach(m => { %>
+    <a href="/u/<%= m.id %>" class="sq-card" style="min-height:5.5rem;aspect-ratio:auto">
+      <div style="font-size:1.5rem"><%= m.avatar || '👤' %></div>
+      <div class="sq-title"><%= m.name %></div>
+      <div class="sq-meta">@<%= m.username %><%= m.id === group.leader_id ? ' · سازنده' : '' %></div>
+    </a>
+  <% }) %>
+</div>
+<%- include('../partials/footer') %>

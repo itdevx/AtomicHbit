@@ -1,0 +1,59 @@
+</main>
+<footer class="footer">Atomic Habit — اصول روانشناسی رفتاری</footer>
+<% if (user) { %>
+<nav class="bottom-nav">
+  <a href="/dashboard"><span class="ic">📊</span>خانه</a>
+  <a href="/focus"><span class="ic">⏱️</span>تمرکز</a>
+  <a href="/pair"><span class="ic">🤝</span>دونفره</a>
+  <a href="/groups"><span class="ic">👥</span>گروه</a>
+  <a href="/profile"><span class="ic">👤</span>من</a>
+</nav>
+<% } %>
+<script>
+(function(){
+  var btn=document.getElementById('menuBtn');
+  var dr=document.getElementById('navDrawer');
+  if(btn&&dr){
+    btn.onclick=function(){ dr.classList.toggle('open'); };
+    dr.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ dr.classList.remove('open'); }); });
+  }
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function updateClock(){
+    var el=document.getElementById('iranClock');
+    if(!el) return;
+    try {
+      var parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tehran',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(new Date());
+      var m={}; parts.forEach(function(p){ m[p.type]=p.value; });
+      el.textContent=m.hour+':'+m.minute+':'+m.second;
+    } catch(e){
+      var d=new Date(); el.textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+    }
+  }
+  updateClock(); setInterval(updateClock, 1000);
+  <% if (user) { %>
+  function setDot(n){ var d=document.getElementById('notifDot'); if(d) d.classList.toggle('on', n>0); }
+  function pollNotif(){
+    fetch('/api/notifications/unread',{credentials:'same-origin'})
+      .then(function(r){return r.json()}).then(function(d){ setDot(d.count||0); }).catch(function(){});
+  }
+  pollNotif(); setInterval(pollNotif, 8000);
+  try {
+    var socket=io();
+    socket.on('notification', function(p){
+      pollNotif();
+      if(p&&p.title){
+        var t=document.createElement('div');
+        t.textContent='🔔 '+p.title;
+        t.className='ah-toast';
+        if(p.link){ t.style.cursor='pointer'; t.onclick=function(){ location.href=p.link; }; }
+        document.body.appendChild(t);
+        setTimeout(function(){ t.remove(); }, 4000);
+      }
+    });
+  } catch(e){}
+  <% } %>
+})();
+</script>
+<script src="/js/app.js"></script>
+</body>
+</html>

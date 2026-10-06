@@ -1,0 +1,105 @@
+<%- include('partials/header') %>
+<div class="card" style="max-width:36rem;margin:0 auto 0.65rem;text-align:center">
+  <h1 style="font-size:1.05rem;margin-top:0">🤝 تمرکز دونفره</h1>
+  <p class="muted" style="margin:0;font-size:0.85rem"><%= from.name %> × <%= to.name %></p>
+  <p class="muted" style="font-size:0.72rem">وضعیت: <%= pair.status %> · <%= pair.minutes %> دقیقه</p>
+  <p class="muted" style="font-size:0.72rem">لینک اتاق: <a href="/pair/<%= pair.id %>" style="color:var(--accent)">/pair/<%= pair.id %></a></p>
+
+  <% if (pair.status==='pending' && me===pair.to_id) { %>
+    <form method="POST" action="/pair/<%= pair.id %>/accept" style="margin-top:0.65rem">
+      <button class="btn btn-primary">قبول دعوت</button>
+    </form>
+  <% } else if (pair.status==='pending') { %>
+    <p class="muted" style="margin-top:0.65rem">منتظر قبول طرف مقابل… از منوی دونفره هم می‌توانی برگردی.</p>
+  <% } %>
+
+  <% if (pair.status==='active' || pair.status==='finished') { %>
+    <div class="timer-display" id="display">—</div>
+    <p class="muted" id="status" style="font-size:0.78rem">هر دو «شروع مشترک» را بزنید</p>
+    <div class="pair-ready">
+      <span class="pill" id="readyMe">من: ❌</span>
+      <span class="pill" id="readyOther">طرف: ❌</span>
+    </div>
+    <% if (pair.status==='active') { %>
+    <div style="display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;margin:0.45rem 0">
+      <button type="button" class="btn btn-primary btn-sm" id="readyBtn">✓ شروع مشترک</button>
+      <button type="button" class="btn btn-sm" id="pauseBtn">توقف</button>
+    </div>
+    <p class="muted" style="font-size:0.7rem;line-height:1.6">ترک تب تایمر را متوقف می‌کند ولی زمان از بین نمی‌رود؛ با زدن دوباره «شروع مشترک» توسط هر دو، از همان دقیقه ادامه می‌یابد. بازگشت: دونفره → جلسه فعال.</p>
+    <form method="POST" action="/pair/<%= pair.id %>/complete">
+      <input type="hidden" name="minutes" id="doneMin" value="<%= pair.minutes %>">
+      <button class="btn btn-sm" type="submit">ثبت اتمام من</button>
+    </form>
+    <% } %>
+  <% } %>
+</div>
+
+<% if (pair.status==='active' || pair.status==='finished') { %>
+<div class="pair-chat-dock" style="max-width:36rem;margin:0 auto 1rem">
+  <div class="tg-wrap tg-tall">
+    <div class="tg-header"><span>💬 چت</span><span class="muted" id="presence" style="font-weight:400;font-size:0.72rem"></span></div>
+    <div class="tg-box" id="box"></div>
+    <div class="tg-composer">
+      <div class="reply-bar" id="replyBar"></div>
+      <div class="emoji-panel" id="emojiPanel"></div>
+      <div class="tg-composer-row">
+        <button type="button" class="tg-emoji-btn" id="emojiBtn" title="ایموجی">😊</button>
+        <input id="text" placeholder="پیام..." maxlength="1000" autocomplete="off">
+        <button type="button" class="tg-send" id="sendBtn" title="ارسال">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/chat-ui.js"></script>
+<script>
+(function(){
+  var pairId=<%= pair.id %>, minutes=<%= pair.minutes %>, myId=<%= me %>;
+  var fromId=<%= pair.from_id %>, toId=<%= pair.to_id %>;
+  var otherId = myId===fromId ? toId : fromId;
+  var socket=io();
+  var room='pair-'+pairId;
+  socket.emit('join', room);
+  socket.on('error_msg', function(m){ alert(m); location.href='/pair'; });
+  socket.emit('pair:join', pairId);
+  socket.emit('pair:set-minutes', { pairId: pairId, minutes: minutes });
+
+  var display=document.getElementById('display'), status=document.getElementById('status');
+  function fmt(s){ s=Math.max(0,s|0); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+  function setReadyUI(ready){
+    var meOn=!!(ready&&ready[myId]), otOn=!!(ready&&ready[otherId]);
+    var rm=document.getElementById('readyMe'), ro=document.getElementById('readyOther');
+    if(rm){ rm.textContent=meOn?'من: ✅':'من: ❌'; rm.classList.toggle('on',meOn); }
+    if(ro){ ro.textContent=otOn?'طرف: ✅':'طرف: ❌'; ro.classList.toggle('on',otOn); }
+  }
+  function applyState(t){
+    if(display&&t.left!=null) display.textContent=fmt(t.left||t.planned*60);
+    setReadyUI(t.ready||{});
+    if(!status) return;
+    if(t.running) status.textContent='تمرکز مشترک…';
+    else if(t.reason==='blur') status.textContent='متوقف (زمان حفظ شد) — '+(t.by||'')+' تب را ترک کرد. هر دو دوباره شروع مشترک بزنید';
+    else status.textContent='هر دو «شروع مشترک» را بزنید';
+  }
+  socket.on('pair:state', applyState);
+  socket.on('pair:tick', function(t){ if(display) display.textContent=fmt(t.left); });
+  socket.on('pair:done', function(t){
+    if(display) display.textContent='00:00';
+    if(status) status.textContent='تمام ✓';
+    var dm=document.getElementById('doneMin'); if(dm) dm.value=t.planned;
+  });
+  var rb=document.getElementById('readyBtn'), pb=document.getElementById('pauseBtn');
+  if(rb) rb.onclick=function(){ socket.emit('pair:ready',{pairId:pairId,minutes:minutes}); };
+  if(pb) pb.onclick=function(){ socket.emit('pair:pause', pairId); };
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) socket.emit('pair:blur', pairId); });
+
+  var params=new URLSearchParams(location.search);
+  initTgChat({
+    room: room, myId: myId, box: document.getElementById('box'), socket: socket,
+    replyBar: document.getElementById('replyBar'), textInput: document.getElementById('text'),
+    sendBtn: document.getElementById('sendBtn'), emojiBtn: document.getElementById('emojiBtn'),
+    emojiPanel: document.getElementById('emojiPanel'), highlightId: params.get('msg')
+  });
+  socket.on('presence', function(n){ var p=document.getElementById('presence'); if(p) p.textContent='👥 '+n; });
+})();
+</script>
+<% } %>
+<%- include('partials/footer') %>

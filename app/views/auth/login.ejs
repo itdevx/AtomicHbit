@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<div class="card" style="max-width:24rem;margin:1rem auto">
+  <h1 style="margin-top:0;font-size:1.15rem">ورود</h1>
+  <% if (error) { %><p style="color:var(--danger)"><%= error %></p><% } %>
+  <form method="POST" action="/auth/login">
+    <div class="field"><label>ایمیل یا نام کاربری</label><input name="email" required></div>
+    <div class="field"><label>رمز</label><input type="password" name="password" required></div>
+    <button class="btn btn-primary" style="width:100%">ورود</button>
+  </form>
+  <a href="/auth/google" class="btn" style="width:100%;margin-top:.75rem">ادامه با گوگل</a>
+  <p class="muted" style="text-align:center;margin-top:1rem"><a href="/auth/register" style="color:var(--accent)">ثبت‌نام</a></p>
+</div>
+<%- include('../partials/footer') %>

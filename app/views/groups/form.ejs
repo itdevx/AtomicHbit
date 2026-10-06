@@ -1,0 +1,9 @@
+<%- include('../partials/header') %>
+<div class="card" style="max-width:28rem;margin:0 auto">
+  <h1 style="font-size:1.1rem;margin-top:0">ساخت گروه</h1>
+  <% if (error) { %><p style="color:var(--danger)"><%= error %></p><% } %>
+  <form method="POST"><div class="field"><label>نام</label><input name="name" required></div>
+  <div class="field"><label>توضیح</label><textarea name="description" rows="2"></textarea></div>
+  <button class="btn btn-primary">ایجاد</button></form>
+</div>
+<%- include('../partials/footer') %>

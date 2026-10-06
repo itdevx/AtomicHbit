@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+<h1 class="page-title">🤝 تمرکز دونفره</h1>
+
+<div class="card" style="max-width:26rem;margin:0 auto 1rem">
+  <div style="text-align:center;margin-bottom:0.85rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border)">
+    <div class="muted" style="font-size:0.72rem">آیدی عددی تو</div>
+    <div style="font-size:1.65rem;font-weight:800;color:var(--accent);letter-spacing:0.02em"><%= me.public_id || (100000 + me.id) %></div>
+    <div class="muted" style="font-size:0.7rem;margin-top:0.2rem">این عدد را به دوستت بده</div>
+  </div>
+  <% if (error) { %><p style="color:var(--danger);font-size:0.85rem"><%= error %></p><% } %>
+  <div class="field">
+    <label>آیدی طرف مقابل</label>
+    <input id="pid" type="number" placeholder="مثلاً 100001" autocomplete="off">
+  </div>
+  <div class="lookup" id="preview"><span class="muted">با وارد کردن آیدی، مشخصات realtime می‌آید…</span></div>
+  <form method="POST" style="margin-top:0.75rem">
+    <input type="hidden" name="public_id" id="public_id">
+    <div class="field"><label>مدت (دقیقه)</label><input type="number" name="minutes" value="25" min="5" max="120"></div>
+    <button class="btn btn-primary" type="submit" id="inviteBtn" disabled style="width:100%">ارسال دعوت</button>
+  </form>
+</div>
+
+<% if (typeof activePairs !== 'undefined' && activePairs.length) { %>
+  <div class="sec-title">جلسات فعال / در انتظار</div>
+  <div style="display:flex;flex-direction:column;gap:0.45rem;max-width:26rem;margin:0 auto 1rem">
+    <% activePairs.forEach(p => { %>
+      <a href="/pair/<%= p.id %>" class="list-row" style="text-decoration:none">
+        <div style="min-width:0">
+          <div style="font-weight:700;font-size:0.9rem"><%= p.otherName %></div>
+          <div class="muted" style="font-size:0.72rem">@<%= p.otherUsername %> · <%= p.minutes %> دق
+            <% if (p.status==='active') { %> · 🟢 فعال<% } else { %> · 🟡 انتظار<% } %>
+          </div>
+        </div>
+        <span class="btn btn-sm btn-primary" style="flex-shrink:0">ورود</span>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<% if (typeof historyPairs !== 'undefined' && historyPairs.length) { %>
+  <div class="sec-title">تاریخچه</div>
+  <div style="display:flex;flex-direction:column;gap:0.4rem;max-width:26rem;margin:0 auto">
+    <% historyPairs.slice(0,12).forEach(p => { %>
+      <a href="/pair/<%= p.id %>" class="list-row" style="text-decoration:none">
+        <span style="font-weight:600;font-size:0.85rem"><%= p.otherName %></span>
+        <span class="muted" style="font-size:0.72rem"><%= p.status %> · <%= p.minutes %>د</span>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<script>
+(function(){
+  var pid=document.getElementById('pid'), preview=document.getElementById('preview');
+  var hid=document.getElementById('public_id'), btn=document.getElementById('inviteBtn'), t=null;
+  function lookup(){
+    var v=pid.value.trim();
+    if(!v||v.length<4){ preview.innerHTML='<span class="muted">آیدی را کامل وارد کن</span>'; btn.disabled=true; return; }
+    fetch('/api/user-by-id?pid='+encodeURIComponent(v),{credentials:'same-origin'})
+      .then(function(r){return r.json()}).then(function(d){
+        if(!d.found){ preview.innerHTML='<span style="color:var(--danger)">پیدا نشد</span>'; btn.disabled=true; return; }
+        hid.value=d.public_id; btn.disabled=false;
+        preview.innerHTML='<div style="display:flex;gap:0.65rem;align-items:center"><span style="font-size:1.5rem">'+d.avatar+'</span><div><strong>'+d.name+'</strong><div class="muted" style="font-size:0.75rem">@'+d.username+' · '+d.public_id+'</div></div></div>';
+      });
+  }
+  pid.addEventListener('input', function(){ clearTimeout(t); t=setTimeout(lookup, 280); });
+})();
+</script>
+<%- include('partials/footer') %>

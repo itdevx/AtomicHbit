@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+<div class="card" style="margin-bottom:0.75rem;text-align:center">
+  <div style="font-size:2.25rem"><%= profile.user.avatar || '🌱' %></div>
+  <h1 style="margin:0.2rem 0;font-size:1.15rem"><%= profile.user.name %></h1>
+  <p class="muted" style="font-size:0.8rem">@<%= profile.user.username %> · آیدی <%= profile.user.public_id %></p>
+  <p class="muted" style="font-size:0.8rem">👥 <%= profile.followers %> دنبال‌کننده · <%= profile.following %> دنبال‌شونده</p>
+  <% if (!isSelf) { %>
+    <% if (following) { %>
+      <form method="POST" action="/u/<%= profile.user.id %>/unfollow"><button class="btn btn-sm">آنفالو</button></form>
+    <% } else { %>
+      <form method="POST" action="/u/<%= profile.user.id %>/follow"><button class="btn btn-sm btn-primary">فالو</button></form>
+    <% } %>
+  <% } %>
+</div>
+<div class="farm card" style="margin-bottom:0.75rem">
+  <div class="stage"><%= profile.farm.stage.split(' ')[0] %></div>
+  <div style="font-size:0.9rem"><%= profile.farm.stage %> · سطح <%= profile.farm.level %></div>
+  <div class="bar"><span style="width:<%= profile.farm.pct %>%"></span></div>
+  <div class="muted" style="margin-top:0.5rem;font-size:0.8rem">
+    بج فعلی: <%= profile.focusBadge.emoji %> <%= profile.focusBadge.name %> (<%= profile.focusBadge.totalMin %> دق)
+  </div>
+</div>
+<div class="grid-3" style="margin-bottom:0.75rem">
+  <div class="card stat"><div class="num" style="font-size:1.15rem"><%= Math.round(profile.focus.studyMin/60*10)/10 %></div><div class="lbl">ساعت مطالعه</div></div>
+  <div class="card stat"><div class="num" style="font-size:1.15rem"><%= Math.round(profile.focus.workMin/60*10)/10 %></div><div class="lbl">ساعت کار</div></div>
+  <div class="card stat"><div class="num" style="font-size:1.15rem"><%= Math.round(profile.focus.focusMin/60*10)/10 %></div><div class="lbl">ساعت تمرکز</div></div>
+</div>
+<div class="grid-3" style="margin-bottom:0.75rem">
+  <div class="card stat"><div class="num" style="font-size:1.1rem"><%= profile.taskStats.week %></div><div class="lbl">تسک هفته</div></div>
+  <div class="card stat"><div class="num" style="font-size:1.1rem"><%= profile.taskStats.month %></div><div class="lbl">تسک ماه</div></div>
+  <div class="card stat"><div class="num" style="font-size:1.1rem"><%= profile.taskStats.year %></div><div class="lbl">تسک سال</div></div>
+</div>
+<% if (profile.badges && profile.badges.length) { %>
+<div class="card" style="margin-bottom:0.75rem">
+  <h3 style="margin-top:0;font-size:0.9rem">🏅 بج‌های تمرکز</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:0.45rem">
+    <% profile.badges.forEach(b => { %>
+      <span class="streak-pill" style="font-size:0.8rem"><%= b.emoji %> <%= b.name %></span>
+    <% }) %>
+  </div>
+</div>
+<% } %>
+<div class="card">
+  <h3 style="margin-top:0;font-size:0.9rem">عادت‌ها</h3>
+  <% profile.habits.forEach(h => { %>
+    <div class="muted" style="margin-bottom:0.3rem"><%= h.title %> — 🔥 <%= h.streak %></div>
+  <% }) %>
+</div>
+<%- include('partials/footer') %>

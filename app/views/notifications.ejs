@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<h1 class="page-title">🔔 اعلان‌ها</h1>
+<% if (!list.length) { %>
+  <div class="card muted">اعلانی نیست</div>
+<% } %>
+<% list.forEach(n => {
+  const icon = n.type === 'chat_reply' ? '💬' : n.type === 'badge' ? '🏅' : n.type === 'follow' ? '👤' : n.type === 'group_join' || n.type === 'group_ok' ? '👥' : n.type === 'pair' ? '🤝' : '🔔';
+%>
+  <a href="<%= n.link || '/' %>" class="list-row" style="text-decoration:none;margin-bottom:0.45rem">
+    <div style="display:flex;gap:0.65rem;align-items:flex-start;min-width:0;flex:1">
+      <span style="font-size:1.25rem;flex-shrink:0;line-height:1.2"><%= icon %></span>
+      <div style="min-width:0">
+        <div style="font-weight:700;font-size:0.88rem"><%= n.title %></div>
+        <% if (n.message) { %><div class="muted" style="font-size:0.78rem;margin-top:0.15rem"><%= n.message %></div><% } %>
+        <div class="muted" style="font-size:0.68rem;margin-top:0.25rem"><%= n.at ? new Date(n.at).toLocaleString('fa-IR') : '' %></div>
+      </div>
+    </div>
+    <span class="muted" style="flex-shrink:0;font-size:0.85rem">‹</span>
+  </a>
+<% }) %>
+<%- include('partials/footer') %>

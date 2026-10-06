@@ -1,0 +1,71 @@
+<%- include('partials/header') %>
+<div class="card" style="max-width:28rem;margin:0 auto">
+  <h1 style="margin-top:0;font-size:1.15rem;text-align:center">تایمر تمرکز</h1>
+  <p class="muted" style="text-align:center;font-size:0.8rem"><%= iran.display %></p>
+  <div class="timer-display" id="display">25:00</div>
+  <div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin:1rem 0">
+    <button type="button" class="btn btn-sm" data-m="15">۱۵ د</button>
+    <button type="button" class="btn btn-sm" data-m="25">۲۵ د</button>
+    <button type="button" class="btn btn-sm" data-m="30">۳۰ د</button>
+    <button type="button" class="btn btn-sm" data-m="45">۴۵ د</button>
+    <button type="button" class="btn btn-sm" data-m="60">۶۰ د</button>
+  </div>
+  <div class="field">
+    <label>نوع</label>
+    <select id="cat">
+      <option value="focus">تمرکز</option>
+      <option value="study">مطالعه</option>
+      <option value="work">کار</option>
+    </select>
+  </div>
+  <div class="field"><label>برچسب</label><input id="label" value="جلسه تمرکز"></div>
+  <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+    <button type="button" class="btn btn-primary" id="startBtn">شروع</button>
+    <button type="button" class="btn" id="pauseBtn">توقف دستی</button>
+    <button type="button" class="btn" id="resetBtn">ریست</button>
+  </div>
+  <p class="muted" style="text-align:center;margin-top:1rem;font-size:0.8rem" id="status">آماده</p>
+  <p class="muted" style="margin-top:1rem;font-size:0.75rem;line-height:1.7;border-top:1px solid var(--border);padding-top:0.85rem">
+    <strong style="color:var(--text)">نکته:</strong>
+    اگر از این تب خارج شوی، تایمر <strong style="color:var(--warn)">خودکار متوقف</strong> می‌شود.
+    با برگشتن به تب، از دکمه شروع دوباره ادامه بده.
+  </p>
+</div>
+<script>
+(function(){
+  var total=25*60, left=total, planned=25, timer=null, running=false, pausedByHide=false;
+  var display=document.getElementById('display'), status=document.getElementById('status');
+  function fmt(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+  function render(){ display.textContent=fmt(left); }
+  function stopTick(){ if(timer){ clearInterval(timer); timer=null; } running=false; }
+  function startTick(){
+    if(running||left<=0) return;
+    running=true; pausedByHide=false; status.textContent='در حال تمرکز…';
+    timer=setInterval(function(){
+      left--; render();
+      if(left<=0){
+        stopTick(); status.textContent='تمام — ذخیره…';
+        fetch('/focus/complete',{
+          method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+          body:JSON.stringify({ minutes:planned, label:document.getElementById('label').value, category:document.getElementById('cat').value })
+        }).then(function(){ status.textContent='ذخیره شد ✓'; left=total; render(); });
+      }
+    },1000);
+  }
+  document.querySelectorAll('[data-m]').forEach(function(b){
+    b.onclick=function(){ if(running) return; planned=+b.getAttribute('data-m'); total=planned*60; left=total; render(); };
+  });
+  document.getElementById('startBtn').onclick=startTick;
+  document.getElementById('pauseBtn').onclick=function(){ stopTick(); status.textContent='متوقف (دستی)'; };
+  document.getElementById('resetBtn').onclick=function(){ stopTick(); left=total; render(); status.textContent='ریست'; };
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){
+      if(running){ stopTick(); pausedByHide=true; status.textContent='متوقف — تب غیرفعال است'; }
+    } else if(pausedByHide && left>0){
+      status.textContent='برگشتی — برای ادامه «شروع» را بزن';
+    }
+  });
+  render();
+})();
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,17 @@
+<%- include('../partials/header') %>
+<div class="card" style="max-width:24rem;margin:1rem auto">
+  <h1 style="margin-top:0;font-size:1.15rem">ثبت‌نام</h1>
+  <p class="muted" style="font-size:.8rem">ایمیل و نام کاربری باید یکتا باشند.</p>
+  <% if (error) { %><p style="color:var(--danger)"><%= error %></p><% } %>
+  <form method="POST" action="/auth/register">
+    <div class="field"><label>نام کاربری (یکتا) *</label><input name="username" required minlength="3" pattern="[A-Za-z0-9_\u0600-\u06FF]+"></div>
+    <div class="field"><label>نام نمایشی</label><input name="name"></div>
+    <div class="field"><label>ایمیل (یکتا) *</label><input type="email" name="email" required></div>
+    <div class="field"><label>رمز *</label><input type="password" name="password" required minlength="6"></div>
+    <button class="btn btn-primary" style="width:100%">ثبت‌نام</button>
+  </form>
+  <hr style="border-color:var(--border);margin:1rem 0">
+  <a href="/auth/google" class="btn" style="width:100%">ورود / ثبت‌نام با گوگل</a>
+  <p class="muted" style="text-align:center;margin-top:1rem"><a href="/auth/login" style="color:var(--accent)">ورود</a></p>
+</div>
+<%- include('../partials/footer') %>

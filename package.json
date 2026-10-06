@@ -1,0 +1,20 @@
+{
+  "name": "atomic-habit",
+  "version": "2.0.0",
+  "description": "Atomic Habit — behavioral psychology habit & focus platform",
+  "main": "app/server.js",
+  "scripts": {
+    "start": "node app/server.js"
+  },
+  "author": "itdevx",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "socket.io": "^4.7.5"
+  },
+  "engines": { "node": ">=18" }
+}

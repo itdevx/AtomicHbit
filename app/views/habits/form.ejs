@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+<div class="card" style="max-width:28rem;margin:0 auto">
+  <h1 style="margin-top:0;font-size:1.15rem"><%= habit && habit.id ? 'ویرایش عادت' : 'عادت جدید' %></h1>
+  <p class="muted" style="font-size:0.78rem">چهار اصل: آشکار · جذاب · آسان · رضایت‌بخش</p>
+  <% if (error) { %><div style="color:var(--danger);margin-bottom:0.75rem"><%= error %></div><% } %>
+  <form method="POST" action="<%= habit && habit.id ? '/habits/' + habit.id + '/edit' : '/habits/new' %>">
+    <div class="field">
+      <label>عنوان *</label>
+      <input name="title" required maxlength="80" value="<%= habit && habit.title ? habit.title : '' %>" placeholder="مثلاً ۲ دقیقه مطالعه">
+    </div>
+    <div class="field">
+      <label>دسته</label>
+      <select name="category">
+        <% [['health','سلامت'],['learning','یادگیری'],['focus','تمرکز'],['mind','ذهن'],['general','عمومی']].forEach(function(c){ %>
+          <option value="<%= c[0] %>" <%= habit && habit.category===c[0]?'selected':'' %>><%= c[1] %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="field">
+      <label>نشانه (Cue)</label>
+      <input name="cue" value="<%= habit && habit.cue ? habit.cue : '' %>" placeholder="بعد از ریختن قهوه / کنار مسواک">
+    </div>
+    <div class="field">
+      <label>نیت اجرایی</label>
+      <input name="intention" value="<%= habit && habit.intention ? habit.intention : '' %>" placeholder="اگر ساعت ۸ شد، ۲ صفحه می‌خوانم">
+    </div>
+    <div class="field">
+      <label>نسخه ۲ دقیقه</label>
+      <input name="two_minute" value="<%= habit && habit.two_minute ? habit.two_minute : '' %>" placeholder="فقط یک صفحه باز کن / کفش را بپوش">
+    </div>
+    <div class="field">
+      <label>رأی هویت</label>
+      <input name="identity_vote" value="<%= habit && habit.identity_vote ? habit.identity_vote : '' %>" placeholder="من اهل یادگیری / نظم / سلامت هستم">
+    </div>
+    <div class="field">
+      <label>توضیح</label>
+      <textarea name="description" rows="2" placeholder="اختیاری — چرا این عادت مهم است؟"><%= habit && habit.description ? habit.description : '' %></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">ذخیره</button>
+    <a href="/habits" class="btn">انصراف</a>
+  </form>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap">
+  <h1 class="page-title" style="margin:0">👥 گروه‌ها</h1>
+  <a href="/groups/new" class="btn btn-primary btn-sm">+ گروه</a>
+</div>
+
+<div class="sec-title">گروه‌های من</div>
+<% if (!mine.length) { %><p class="muted" style="margin-bottom:0.75rem">هنوز عضو گروهی نیستی</p><% } %>
+<div class="grid-sq" style="margin-bottom:0.5rem">
+  <% mine.forEach(g => { %>
+    <a href="/groups/<%= g.id %>" class="sq-card">
+      <div class="sq-title"><%= g.name %></div>
+      <div class="muted" style="font-size:0.72rem;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical"><%= g.description || '—' %></div>
+      <div class="sq-meta">👤 <%= (g.member_ids||[]).length %> عضو · عضو هستی</div>
+    </a>
+  <% }) %>
+</div>
+
+<div class="sec-title">سایر گروه‌ها</div>
+<div class="grid-sq">
+  <% others.forEach(g => { %>
+    <a href="/groups/<%= g.id %>" class="sq-card">
+      <div class="sq-title"><%= g.name %></div>
+      <div class="muted" style="font-size:0.72rem;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical"><%= g.description || '—' %></div>
+      <div class="sq-meta">👤 <%= (g.member_ids||[]).length %> عضو</div>
+    </a>
+  <% }) %>
+</div>
+<% if (!others.length) { %><p class="muted">گروه دیگری نیست</p><% } %>
+<%- include('../partials/footer') %>

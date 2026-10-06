@@ -1,0 +1,22 @@
+<%- include('../partials/header') %>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;gap:0.5rem">
+  <h1 class="page-title" style="margin:0">✅ عادت‌ها</h1>
+  <a href="/habits/new" class="btn btn-primary btn-sm">+ جدید</a>
+</div>
+<% if (!habits.length) { %><div class="card muted">عادتی نیست</div><% } %>
+<div class="grid-sq">
+<% habits.forEach(h => { %>
+  <div class="sq-card">
+    <div class="sq-title"><span style="color:<%= h.color %>">●</span> <%= h.title %></div>
+    <div class="muted" style="font-size:0.72rem"><%= h.category %></div>
+    <div class="sq-meta">🔥 <%= h.streak %> روز زنجیره</div>
+    <div class="sq-actions">
+      <a href="/habits/<%= h.id %>/edit" class="btn btn-sm">ویرایش</a>
+      <form method="POST" action="/habits/<%= h.id %>/delete" onsubmit="return confirm('حذف؟')">
+        <button class="btn btn-sm btn-danger">حذف</button>
+      </form>
+    </div>
+  </div>
+<% }) %>
+</div>
+<%- include('../partials/footer') %>

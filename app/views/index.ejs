@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <h1>عادت‌های کوچک،<br>هویت بزرگ</h1>
+  <p>سیستم ردیابی عادت و تمرکز بر اساس اصول روانشناسی رفتاری: هویت، شروع کوچک، اثر مرکب و رضایت از پیشرفت.</p>
+  <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap">
+    <% if (user) { %>
+      <a href="/dashboard" class="btn btn-primary">داشبورد من</a>
+      <a href="/pair" class="btn">تمرکز دونفره</a>
+      <a href="/habits" class="btn">عادت‌ها</a>
+    <% } else { %>
+      <a href="/auth/register" class="btn btn-primary">شروع رایگان</a>
+      <a href="/auth/login" class="btn">ورود</a>
+    <% } %>
+    <a href="/science" class="btn">اصول رفتاری</a>
+  </div>
+</section>
+
+<div class="grid-2" style="margin-bottom:1rem">
+  <div class="card">
+    <h3 style="margin-top:0;font-size:1rem">۱٪ بهتر هر روز</h3>
+    <p class="muted" style="margin:0">پیشرفت تجمعی مهم‌تر از انگیزه لحظه‌ای است. زنجیره را نشکن؛ حتی با نسخهٔ ۲ دقیقه‌ای عادت.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;font-size:1rem">رأی به هویت</h3>
+    <p class="muted" style="margin:0">هر تیک، یک رأی به «کسی که می‌خواهی باشی» است — نه فقط یک کار در لیست.</p>
+  </div>
+</div>
+
+<div class="sec-title">نکات کاربردی برای شروع</div>
+<div class="grid-2" style="margin-bottom:1rem">
+  <div class="card">
+    <h3 style="margin-top:0;font-size:0.95rem">🌱 قانون ۲ دقیقه</h3>
+    <p class="muted" style="margin:0">عادت جدید را آن‌قدر کوچک کن که شروعش کمتر از ۲ دقیقه طول بکشد. «مطالعه» → «یک صفحه باز کردن».</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;font-size:0.95rem">🔗 پشته‌سازی عادت</h3>
+    <p class="muted" style="margin:0">عادت جدید را بعد از یک عادت ثابت بچسبان: «بعد از مسواک، ۲ دقیقه کشش».</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;font-size:0.95rem">👁️ آشکار کردن نشانه</h3>
+    <p class="muted" style="margin:0">محیط را طوری بچین که یادآوری عادت جلوی چشم باشد؛ مثلاً کتاب کنار بالش.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0;font-size:0.95rem">🔥 نشکن دو روز پشت‌سرهم</h3>
+    <p class="muted" style="margin:0">یک روز جا ماندن طبیعی است؛ دو روز متوالی را خط قرمز کن تا زنجیره زنده بماند.</p>
+  </div>
+</div>
+
+<div class="sec-title">امکانات پلتفرم</div>
+<div class="grid-sq" style="margin-bottom:1rem">
+  <div class="sq-card">
+    <div style="font-size:1.5rem">✅</div>
+    <div class="sq-title">عادت و تسک</div>
+    <div class="sq-meta">چک‌لیست روزانه، streak و نمودار</div>
+  </div>
+  <div class="sq-card">
+    <div style="font-size:1.5rem">⏱️</div>
+    <div class="sq-title">تایمر تمرکز</div>
+    <div class="sq-meta">مطالعه، کار و تمرکز جدا ثبت می‌شود</div>
+  </div>
+  <div class="sq-card">
+    <div style="font-size:1.5rem">🤝</div>
+    <div class="sq-title">دونفره</div>
+    <div class="sq-meta">تایمر مشترک + چت خصوصی</div>
+  </div>
+  <div class="sq-card">
+    <div style="font-size:1.5rem">👥</div>
+    <div class="sq-title">گروه و لیدربورد</div>
+    <div class="sq-meta">حمایت اجتماعی و رقابت سالم</div>
+  </div>
+  <div class="sq-card">
+    <div style="font-size:1.5rem">🏅</div>
+    <div class="sq-title">بج و مزرعه</div>
+    <div class="sq-meta">پیشرفت بصری از بذر تا مزرعه</div>
+  </div>
+  <div class="sq-card">
+    <div style="font-size:1.5rem">📜</div>
+    <div class="sq-title">تاریخچه</div>
+    <div class="sq-meta">فعالیت‌ها قابل حذف و مرور</div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1rem">
+  <h3 style="margin-top:0;font-size:1rem">چطور شروع کنیم؟</h3>
+  <ol class="muted" style="margin:0;padding-right:1.2rem;line-height:1.85;font-size:0.88rem">
+    <li>ثبت‌نام کن و جملهٔ هویتت را بنویس.</li>
+    <li>۱ تا ۳ عادت خیلی کوچک بساز (نسخه ۲ دقیقه).</li>
+    <li>هر روز تیک بزن و اگر لازم بود از تایمر تمرکز استفاده کن.</li>
+    <li>با یک دوست تمرکز دونفره امتحان کن تا تعهد بیرونی بسازی.</li>
+    <li>پیشرفت را در مزرعه، نمودار و لیدربورد ببین — نه فقط در احساس لحظه‌ای.</li>
+  </ol>
+</div>
+
+<div class="card" style="margin-bottom:1rem">
+  <h3 style="margin-top:0;font-size:1rem">اشتباهات رایج</h3>
+  <ul class="muted" style="margin:0;padding-right:1.2rem;line-height:1.85;font-size:0.88rem">
+    <li>هدف‌های خیلی بزرگ در روز اول</li>
+    <li>اتکا به انگیزه به‌جای سیستم و محیط</li>
+    <li>تنبیه سخت بعد از یک روز جا ماندن</li>
+    <li>اندازه‌گیری فقط نتیجهٔ نهایی، نه فرآیند روزانه</li>
+  </ul>
+</div>
+
+<div class="card" style="text-align:center">
+  <p class="muted" style="margin:0 0 0.75rem">آماده ساختن سیستم خودت هستی؟</p>
+  <% if (user) { %>
+    <a href="/dashboard" class="btn btn-primary">رفتن به داشبورد</a>
+  <% } else { %>
+    <a href="/auth/register" class="btn btn-primary">همین حالا شروع کن</a>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

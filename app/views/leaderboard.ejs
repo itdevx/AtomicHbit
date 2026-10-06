@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<div class="lb-hero">
+  <div style="font-size:1.75rem;margin-bottom:0.25rem">🏆</div>
+  <h1>لیدربورد</h1>
+  <p class="muted" style="margin:0.35rem 0 0;font-size:0.8rem">رتبه‌بندی بر اساس XP مزرعه و بج تمرکز</p>
+</div>
+<% board.forEach((u,i) => { %>
+  <a href="/u/<%= u.id %>" class="lb-row <%= i===0?'top1':i===1?'top2':i===2?'top3':'' %>">
+    <span style="font-weight:800;color:var(--warn)"><%= i+1 %></span>
+    <span style="font-size:1.2rem"><%= u.avatar %></span>
+    <div style="min-width:0">
+      <div style="font-weight:700;font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><%= u.name %></div>
+      <div class="muted" style="font-size:0.68rem">L<%= u.level %> · <%= u.badge ? u.badge.emoji+' '+u.badge.name : '' %> · 🔥<%= u.streakBest %></div>
+    </div>
+    <div style="font-weight:800;color:var(--accent);font-size:0.82rem"><%= u.xp %></div>
+  </a>
+<% }) %>
+<%- include('partials/footer') %>

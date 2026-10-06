@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+<% if (!room || room === 'global') { %>
+  <div class="card">
+    <h1 class="page-title">💬 چت</h1>
+    <p class="muted">از چت گروه یا دونفره استفاده کن.</p>
+    <a href="/groups" class="btn btn-primary btn-sm">گروه‌ها</a>
+  </div>
+<% } else { %>
+<script>document.body.classList.add('chat-page');</script>
+<div class="tg-full">
+  <div class="tg-header">
+    <span>💬 چت</span>
+    <span class="muted" id="presence" style="font-weight:400;font-size:0.72rem"></span>
+  </div>
+  <div class="tg-box" id="box"></div>
+  <div class="tg-composer">
+    <div class="reply-bar" id="replyBar"></div>
+    <div class="emoji-panel" id="emojiPanel"></div>
+    <div class="tg-composer-row">
+      <button type="button" class="tg-emoji-btn" id="emojiBtn">😊</button>
+      <input id="text" placeholder="پیام..." maxlength="1000" autocomplete="off">
+      <button type="button" class="tg-send" id="sendBtn">➤</button>
+    </div>
+  </div>
+</div>
+<script src="/js/chat-ui.js"></script>
+<script>
+(function(){
+  var room=<%- JSON.stringify(room) %>;
+  var myId=<%= user.id %>;
+  var socket=io();
+  socket.emit('join', room);
+  socket.on('error_msg', function(m){ alert(m); location.href='/groups'; });
+  var params=new URLSearchParams(location.search);
+  initTgChat({
+    room:room, myId:myId, box:document.getElementById('box'), socket:socket,
+    replyBar:document.getElementById('replyBar'), textInput:document.getElementById('text'),
+    sendBtn:document.getElementById('sendBtn'), emojiBtn:document.getElementById('emojiBtn'),
+    emojiPanel:document.getElementById('emojiPanel'), highlightId:params.get('msg')
+  });
+  socket.on('presence', function(n){ var p=document.getElementById('presence'); if(p) p.textContent='👥 '+n; });
+})();
+</script>
+<% } %>
+<%- include('partials/footer') %>

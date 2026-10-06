@@ -1,0 +1,9 @@
+<%- include('partials/header') %>
+<div class="card" style="text-align:center;padding:2.5rem 1.25rem;max-width:24rem;margin:2rem auto">
+  <div style="font-size:2.5rem;margin-bottom:0.5rem">🔒</div>
+  <h1 style="margin:0 0 0.5rem;font-size:1.25rem"><%= typeof title !== 'undefined' && title ? title : 'یافت نشد' %></h1>
+  <p class="muted">این صفحه وجود ندارد یا اجازهٔ دسترسی نداری.</p>
+  <a href="/" class="btn btn-primary" style="margin-top:0.75rem">خانه</a>
+  <% if (user) { %><a href="/dashboard" class="btn" style="margin-top:0.5rem">داشبورد</a><% } %>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap">
+  <h1 class="page-title" style="margin:0">📜 تاریخچه</h1>
+  <form method="POST" action="/history/clear" onsubmit="return confirm('همه پاک شود؟')">
+    <button class="btn btn-sm btn-danger">پاک کردن همه</button>
+  </form>
+</div>
+<% if (!list.length) { %><div class="card muted">فعالیتی نیست</div><% } %>
+<div class="grid-sq">
+  <% list.forEach(a => { %>
+    <div class="sq-card">
+      <div class="sq-title"><%= a.title %></div>
+      <div class="sq-meta"><%= a.type %> · <%= new Date(a.at).toLocaleString('fa-IR') %></div>
+      <div class="sq-actions">
+        <form method="POST" action="/history/<%= a.id %>/delete">
+          <button class="btn btn-sm btn-danger" type="submit">حذف</button>
+        </form>
+      </div>
+    </div>
+  <% }) %>
+</div>
+<%- include('partials/footer') %>

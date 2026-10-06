@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<h1 style="font-size:1.1rem">درخواست‌های عضویت</h1>
+<% pending.forEach(r => { %>
+  <div class="card" style="display:flex;justify-content:space-between;margin-bottom:.5rem">
+    <span>@<%= r.username %></span>
+    <div style="display:flex;gap:.35rem">
+      <form method="POST" action="/groups/requests/<%= r.id %>/accept"><button class="btn btn-sm btn-primary">قبول</button></form>
+      <form method="POST" action="/groups/requests/<%= r.id %>/reject"><button class="btn btn-sm btn-danger">رد</button></form>
+    </div>
+  </div>
+<% }) %>
+<% if (!pending.length) { %><p class="muted">درخواستی نیست</p><% } %>
+<%- include('../partials/footer') %>
